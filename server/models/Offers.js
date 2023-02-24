@@ -16,13 +16,17 @@ const offerSchema = new Schema({
     },
     offerImage:{
         type: String,
-        required: true
+        default: 'bg.jpg'
     },
     content: [
         {
             item: {
                 type: Schema.Types.ObjectId,
                 ref: 'products'
+            },
+            quantity:{
+                type: Number,
+                default: 1
             }
         }
     ],
@@ -48,6 +52,11 @@ const offerSchema = new Schema({
         {
             currency:{
                 type: String,
+                required: true,
+                enum: ['coins', 'gems']
+            },
+            cost: {
+                type: Number,
                 required: true
             }
         }

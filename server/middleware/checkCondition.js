@@ -1,13 +1,14 @@
-const checkCondition = (user, installedDays, offer)=>{
+const checkCondition = (user, offer)=>{
     let age = user.age;
     let country = user.country;
     let level = user.level;
     let purchaser = user.purchaser;
+    let installedDays = Date.now() - Date.parse(user.createdAt)
     const today = new Date()
     if(!(offer?.schedule?.days?.includes(today.getDay() + 1))){
         return false;
     }
-    if(!(offer?.schedule?.dates?.includes(today.getDate() + 1))){
+    if(!(offer?.schedule?.dates?.includes(today.getDate()))){
         return false;
     }
     if(!(offer?.schedule?.months?.includes(today.getMonth() + 1))){
