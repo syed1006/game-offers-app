@@ -1,33 +1,36 @@
 import { useEffect, useRef, useState } from "react";
 import useAuth from '../../hooks/useAuth';
 import OfferCard from "../Offer-Card/OfferCard";
+import Draggable from 'react-draggable';
 import './Home.css';
 
 const Home = () => {
     const [state, setState] = useState({ page: 1, attribute: 'offerId', query: "" });
     const [data, setData] = useState([]);
-    const {auth, setAuth} = useAuth();
+    const { auth, setAuth } = useAuth();
+    const [errmsg, seterr] = useState({ msg: "" });
     const scroll = useRef();
-    
-    const fetchData = async()=>{
+    const errModal = useRef();
+
+    const fetchData = async () => {
         try {
             scroll.current.scrollIntoView()
             let url = process.env.REACT_APP_URL + `/offer/?page=${state.page}`
-            if(state.query){
+            if (state.query) {
                 url += `&query=${state.query}&attribute=${state.attribute}`
             }
             const response = await fetch(
                 url,
-                {   
-                    headers:{
+                {
+                    headers: {
                         authorization: auth.token
                     }
 
                 }
             )
             const res = await response.json();
-            if(res.message === 'jwt expired'){
-                setAuth({token: "", role: ""})
+            if (res.message === 'jwt expired') {
+                setAuth({ token: "", role: "" })
                 localStorage.removeItem('auth-token');
                 localStorage.removeItem('role');
             }
@@ -37,30 +40,30 @@ const Home = () => {
         }
     }
 
-    const handleSubmit = (e)=>{
+    const handleSubmit = (e) => {
         e.preventDefault();
-        setState({...state, page:1});
+        setState({ ...state, page: 1 });
         fetchData()
     }
 
-    const handlePrev = ()=>{
-        if(state.page > 1){
-            setState({...state, page: state.page-1});
+    const handlePrev = () => {
+        if (state.page > 1) {
+            setState({ ...state, page: state.page - 1 });
         }
     }
 
-    const handleNext = ()=>{
-        if(data.length !== 0){
-            setState({...state, page: state.page+1});
+    const handleNext = () => {
+        if (data.length !== 0) {
+            setState({ ...state, page: state.page + 1 });
         }
     }
 
-    const discardSearch = (e)=>{
+    const discardSearch = (e) => {
         e.preventDefault();
         setState({ page: 1, attribute: 'offerId', query: "" });
         fetchData();
     }
-    useEffect(()=>{
+    useEffect(() => {
         fetchData()
     }, [state.page]);
     return (
@@ -93,28 +96,37 @@ const Home = () => {
                 <button className="btn">Search</button>
                 <button className="btn" onClick={discardSearch}>Discard Search</button>
             </form>
-            {data.length === 0 && 
-            <h1 className="message">No Offers To Show</h1>
+            {data.length === 0 &&
+                <h1 className="message">No Offers To Show</h1>
             }
             <section className="flex-container">
+
                 {
-                    data.map((offer, index)=>{
-                        return <OfferCard offer={offer} key={index} fetchData={fetchData}/>
+                    data.map((offer, index) => {
+                        return <OfferCard offer={offer} key={index} fetchData={fetchData} seterr={seterr} errModal={errModal} />
                     })
                 }
+
             </section>
             <section className="pagination-btns">
-                <button 
-                className="btn" 
-                onClick={handlePrev}
-                disabled = {state.page === 1? true: false}
+                <button
+                    className="btn"
+                    onClick={handlePrev}
+                    disabled={state.page === 1 ? true : false}
                 >Prev</button>
-                <button 
-                className="btn" 
-                onClick={handleNext}
-                disabled = {data.length === 0? true: false}
+                <button
+                    className="btn"
+                    onClick={handleNext}
+                    disabled={data.length === 0 ? true : false}
                 >Next</button>
             </section>
+            <div ref={errModal} className="error-modal">
+                <h1 className={errmsg.class}> {errmsg.msg}</h1>
+                <button
+                    className="btn"
+                    onClick={() => { errModal.current.style.top = '-300px' }}
+                >OK</button>
+            </div>
         </main>
     )
 }

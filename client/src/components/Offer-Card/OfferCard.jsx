@@ -3,13 +3,11 @@ import useAuth from "../../hooks/useAuth";
 import EditModal from "../EditModal/EditModal";
 import './OfferCard.css';
 
-const OfferCard = ({ offer, fetchData }) => {
+const OfferCard = ({ offer, fetchData, seterr, errModal }) => {
     const { auth } = useAuth();
     const card = useRef();
-    const errModal = useRef();
     const editModal = useRef();
     const url = process.env.REACT_APP_URL;
-    const [errmsg, seterr] = useState({ msg: "" });
     const [edit, setEdit] = useState(false);
 
     const buyNow = async (curr) => {
@@ -132,13 +130,7 @@ const OfferCard = ({ offer, fetchData }) => {
                         </>
                     }
                 </div>
-                <div ref={errModal} className="error-modal">
-                    <h1 className={errmsg.class}> {errmsg.msg}</h1>
-                    <button
-                        className="btn"
-                        onClick={() => { errModal.current.style.top = '-300px' }}
-                    >OK</button>
-                </div>
+                
             </section>
             {edit && <div ref={editModal} className="edit-modal">
                 <EditModal offer={offer}  setEdit={setEdit} errModal={errModal} setError={seterr} fetchData={fetchData}/>
