@@ -4,11 +4,13 @@ import OfferCard from "../Offer-Card/OfferCard";
 import './Home.css';
 
 const Home = () => {
-    const [state, setState] = useState({ page: 1, data: [], attribute: 'offerId', query: "" });
+    const [state, setState] = useState({ page: 1, attribute: 'offerId', query: "" });
+    const [data, setData] = useState([]);
     const {auth, setAuth} = useAuth()
     
     const fetchData = async()=>{
         try {
+            console.log(state.page)
             let url = process.env.REACT_APP_URL + `/offer/?page=${state.page}`
             if(state.query){
                 url += `&query=${state.query}&attribute=${state.attribute}`
@@ -29,7 +31,7 @@ const Home = () => {
                 localStorage.removeItem('role');
             }
             console.log(res);
-            setState({...state, data: res.data})
+            setData(res.data);
         } catch (error) {
             console.log(error)
         }
@@ -40,9 +42,21 @@ const Home = () => {
         setState({...state, page:1});
         fetchData()
     }
+
+    const handlePrev = ()=>{
+        if(state.page > 1){
+            setState({...state, page: state.page-1});
+        }
+    }
+
+    const handleNext = ()=>{
+        if(data.length !== 0){
+            setState({...state, page: state.page+1});
+        }
+    }
     useEffect(()=>{
         fetchData()
-    }, []);
+    }, [state.page]);
     return (
         <main className="main-section">
             <form onSubmit={handleSubmit}>
@@ -72,16 +86,27 @@ const Home = () => {
                 </div>
                 <button className="btn">Search</button>
             </form>
+            {data.length === 0 && 
+            <h1 className="message">No Offers To Show</h1>
+            }
             <section className="flex-container">
                 {
-                    state.data.map((offer, index)=>{
+                    data.map((offer, index)=>{
                         return <OfferCard offer={offer} key={index}/>
                     })
                 }
             </section>
             <section className="pagination-btns">
-                <button className="btn">Prev</button>
-                <button className="btn">Next</button>
+                <button 
+                className="btn" 
+                onClick={handlePrev}
+                disabled = {state.page === 1? true: false}
+                >Prev</button>
+                <button 
+                className="btn" 
+                onClick={handleNext}
+                disabled = {data.length === 0? true: false}
+                >Next</button>
             </section>
         </main>
     )

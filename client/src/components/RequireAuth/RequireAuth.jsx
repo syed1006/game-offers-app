@@ -1,11 +1,11 @@
 import {Navigate, Outlet } from "react-router-dom";
 import useAuth from '../../hooks/useAuth';
 
-const RequireAuth = ({ role }) => {
+const RequireAuth = ({ allowedRoles }) => {
     const { auth } = useAuth();
 
     return (
-        auth?.role === role
+        allowedRoles.includes(auth?.role)
             ? <Outlet />
             : auth?.token
                 ? <Navigate to="/unauthorized"/>
