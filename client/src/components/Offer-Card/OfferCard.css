@@ -28,6 +28,9 @@
     background-color: #fff;
     padding: 5px;
     margin: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .product-image>img{
@@ -91,6 +94,8 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    border: 2px solid black;
+    border-radius: 20px;
 }
 
 .red{

@@ -1,3 +1,6 @@
+body{
+    background-color: rgb(253, 202, 202);
+}
 .main-section>form{
     width: 60vw;
     background-color: lightgrey;
@@ -48,4 +51,7 @@ textarea{
 .products-container{
     display: flex;
     flex-wrap: wrap;
+    height: 200px;
+    overflow: scroll;
+    overflow-x: hidden;
 }

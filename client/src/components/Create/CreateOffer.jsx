@@ -208,7 +208,7 @@ const CreateOffer = () => {
                         value={data.target}
                         required
                     />
-                    <p className="red">*Use only ANDed or ORed statements here.</p>
+                    <p className="red">*Use only ANDed or ORed statements here. Type 'all' to apply for all users</p>
                 </div>
                 <div className="input-container">
                     <h2>Days: </h2>

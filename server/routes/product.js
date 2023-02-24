@@ -30,7 +30,7 @@ router.get('/', async (req,res)=>{
 })
 
 router.post('/',upload, [
-    body('name', "Name should be of min 5 characters!!" ).isLength({min: 5}),
+    body('name', "Name should be of min 5 characters!!" ).isLength({min: 3}),
     body('description', "Description shpuld be of min 5 characters").isLength({min: 5}),
 ], async (req, res) => {
     console.log(req.body)

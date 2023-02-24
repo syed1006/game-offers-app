@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import useAuth from '../../hooks/useAuth';
 import OfferCard from "../Offer-Card/OfferCard";
-import Draggable from 'react-draggable';
 import './Home.css';
 
 const Home = () => {
