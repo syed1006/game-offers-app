@@ -21,7 +21,7 @@ const App = () => {
                             <Route path='/' element={<Home />} />
                         </Route>
                         <Route element={<RequireAuth allowedRoles={['admin'] }/>}>
-                            <Route path='/create' element={<CreateOffer/>} />
+                            <Route path='/createOffer' element={<CreateOffer/>} />
                         </Route>
                     </Routes>
                 </AuthState>

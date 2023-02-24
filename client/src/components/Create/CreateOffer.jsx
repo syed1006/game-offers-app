@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useAuth from '../../hooks/useAuth';
 import Select from 'react-select';
 import { daysOptions, monthsOption, datesOption } from '../../helpers/options';
@@ -10,10 +10,8 @@ const CreateOffer = () => {
         offerTitle: "",
         offerDescription: "",
         target: "",
-        pricing: {
-            coins: "",
-            gems: ""
-        }
+        coins: "",
+        gems: ""
     })
     const [file, setFile] = useState();
     const [product, setProducts] = useState({ products: [], content: [], display: [] });
@@ -22,7 +20,9 @@ const CreateOffer = () => {
     const [months, setMonths] = useState(null);
     const [dates, setDates] = useState(null);
     const [item, setItem] = useState({id:"", quantity: "", name: ""});
-    const [available, setAvailable] = useState({msg:""})
+    const [available, setAvailable] = useState({msg:""});
+    const errModal = useRef();
+    const [errmsg, setError] = useState({msg: "", class: ""});
     const url = process.env.REACT_APP_URL;
 
     const checkAvailability = async(e)=>{
@@ -60,7 +60,7 @@ const CreateOffer = () => {
             })
             const res = await response.json();
             if (res.status === 'success') {
-                setProducts({ ...product, products: res.result });
+                setProducts({...product , products: res.result });
             }
         } catch (error) {
             console.log(error);
@@ -105,11 +105,11 @@ const CreateOffer = () => {
         formdata.append('pricing', JSON.stringify([
             {
                 currency: 'coins',
-                cost: data.pricing.coins
+                cost: data.coins
             },
             {
                 currency: 'gems',
-                cost: data.pricing.gems
+                cost: data.gems
             }
         ]))
 
@@ -125,9 +125,30 @@ const CreateOffer = () => {
             )
 
             const res = await response.json();
-            console.log(res);
+            if(res.status === 'failure'){
+                setError({msg: res.message, class: 'red'});
+                errModal.current.style.top = '300px';
+            }else{
+                setData({
+                    offerId: "",
+                    offerTitle: "",
+                    offerDescription: "",
+                    target: "",
+                    coins: "",
+                    gems: ""
+                })
+                setProducts({ products: [], content: [], display: [] })
+                setDays(null);
+                setDates(null);
+                setMonths(null);
+                setItem({id:"", quantity: "", name: ""});
+                setError({msg: 'Offer Created Successfully', class: 'green'});
+                errModal.current.style.top = '300px';
+            }
         } catch (error) {
             console.log(error)
+            setError({msg: 'Something went wrong try after some time', class: 'red'});
+            errModal.current.style.top = '300px';
         }
     }
 
@@ -136,7 +157,7 @@ const CreateOffer = () => {
     }, [])
     return (
         <main className="main-section">
-            <h1>Create New Offer</h1>
+            <h1 className="create-heading">Create New Offer</h1>
             <form onSubmit={handleSubmit}>
                 <div className="input-container">
                     <input
@@ -229,8 +250,8 @@ const CreateOffer = () => {
                         name="coins"
                         autoComplete="off"
                         placeholder="Coins"
-                        onChange={(e) => { setData({ ...data, pricing: { ...data.pricing, coins: e.target.value } }) }}
-                        value={data.pricing.coins}
+                        onChange={(e) => { setData({ ...data, coins: e.target.value  }) }}
+                        value={data.coins}
                         required
                     />
                     <input
@@ -239,8 +260,8 @@ const CreateOffer = () => {
                         name="gems"
                         placeholder="Gems"
                         autoComplete="off"
-                        onChange={(e) => { setData({ ...data, pricing: { ...data.pricing, gems: e.target.value } }) }}
-                        value={data.pricing.gems}
+                        onChange={(e) => { setData({ ...data,   gems: e.target.value  }) }}
+                        value={data.gems}
                         required
                     />
                 </div>
@@ -293,6 +314,8 @@ const CreateOffer = () => {
                     onClick={addItem}
                     >Add</button>
                 </div>
+                <h2>Select new products: </h2>
+                <p>*Click below products to select</p>
                 <div className="products-container">
                     {
                         product.products.map((product, index) => {
@@ -310,6 +333,13 @@ const CreateOffer = () => {
                     disabled={!available.msg}
                     >Submit</button>
             </form>
+            <div ref={errModal} className="error-modal">
+                <h1 className={errmsg.class}> {errmsg.msg}</h1>
+                <button 
+                className="btn"
+                onClick={()=>{errModal.current.style.top = '-300px'}}
+                >OK</button>
+            </div>
         </main>
     )
 }

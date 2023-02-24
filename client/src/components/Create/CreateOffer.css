@@ -37,3 +37,15 @@ textarea{
 .submit:hover:enabled{
     font-weight: bold;
 }
+
+.create-heading{
+    font-size: 3rem;
+    margin-bottom: 20px;
+    background-color: blanchedalmond;
+    padding: 5px;
+}
+
+.products-container{
+    display: flex;
+    flex-wrap: wrap;
+}

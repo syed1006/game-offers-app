@@ -15,7 +15,7 @@ const Navbar = ()=>{
                         <li>Contact us</li>
                         {
                             auth.role === 'admin'&&
-                        <li><Link to={'/create'}>Create Offer</Link></li>
+                        <li><Link to={'/createOffer'}>Create Offer</Link></li>
                         }
                     </ul>
                 </nav>

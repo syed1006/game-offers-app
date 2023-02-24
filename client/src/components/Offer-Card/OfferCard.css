@@ -87,6 +87,10 @@
     z-index: 10;
     background-color: lightgray;
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .red{

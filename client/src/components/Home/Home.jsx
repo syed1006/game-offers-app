@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useAuth from '../../hooks/useAuth';
 import OfferCard from "../Offer-Card/OfferCard";
 import './Home.css';
@@ -6,11 +6,12 @@ import './Home.css';
 const Home = () => {
     const [state, setState] = useState({ page: 1, attribute: 'offerId', query: "" });
     const [data, setData] = useState([]);
-    const {auth, setAuth} = useAuth()
+    const {auth, setAuth} = useAuth();
+    const scroll = useRef();
     
     const fetchData = async()=>{
         try {
-            console.log(state.page)
+            scroll.current.scrollIntoView()
             let url = process.env.REACT_APP_URL + `/offer/?page=${state.page}`
             if(state.query){
                 url += `&query=${state.query}&attribute=${state.attribute}`
@@ -30,7 +31,6 @@ const Home = () => {
                 localStorage.removeItem('auth-token');
                 localStorage.removeItem('role');
             }
-            console.log(res);
             setData(res.data);
         } catch (error) {
             console.log(error)
@@ -54,12 +54,18 @@ const Home = () => {
             setState({...state, page: state.page+1});
         }
     }
+
+    const discardSearch = (e)=>{
+        e.preventDefault();
+        setState({ page: 1, attribute: 'offerId', query: "" });
+        fetchData();
+    }
     useEffect(()=>{
         fetchData()
     }, [state.page]);
     return (
         <main className="main-section">
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} ref={scroll}>
                 <div className="input-container">
                     <label htmlFor="attribute">Search Attribute</label>
                     <select name="attribute"
@@ -85,6 +91,7 @@ const Home = () => {
                     />
                 </div>
                 <button className="btn">Search</button>
+                <button className="btn" onClick={discardSearch}>Discard Search</button>
             </form>
             {data.length === 0 && 
             <h1 className="message">No Offers To Show</h1>
@@ -92,7 +99,7 @@ const Home = () => {
             <section className="flex-container">
                 {
                     data.map((offer, index)=>{
-                        return <OfferCard offer={offer} key={index}/>
+                        return <OfferCard offer={offer} key={index} fetchData={fetchData}/>
                     })
                 }
             </section>

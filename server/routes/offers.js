@@ -119,6 +119,7 @@ router.put('/:offerId', async (req, res)=>{
         })
         res.json({
             status: 'success',
+            message: 'updated successfully',
             offer
         })
     } 
@@ -136,6 +137,7 @@ router.delete('/:offerId', async (req, res)=>{
         const offer = await Offer.deleteOne({offerId})
         res.json({
             status: 'success',
+            message: 'Offer Deleted Successfully',
             offer
         })
     } 
