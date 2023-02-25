@@ -1,9 +1,9 @@
 import React from 'react'
 
-const LoginMessage = () => {
+const LoginMessage = ({message}) => {
   return (
-    <div>
-      Login to your account first
+    <div className='message'>
+      <h1 className='red'>{message}</h1>
     </div>
   )
 }

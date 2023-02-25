@@ -1,14 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import useAuth from "../../hooks/useAuth";
-import EditModal from "../EditModal/EditModal";
 import './OfferCard.css';
 
-const OfferCard = ({ offer, fetchData, seterr, errModal }) => {
+const OfferCard = ({ offer, fetchData, seterr, errModal, setEdit }) => {
     const { auth } = useAuth();
     const card = useRef();
-    const editModal = useRef();
     const url = process.env.REACT_APP_URL;
-    const [edit, setEdit] = useState(false);
 
     const buyNow = async (curr) => {
         try {
@@ -78,7 +75,7 @@ const OfferCard = ({ offer, fetchData, seterr, errModal }) => {
     }
 
     const handleEdit = ()=>{
-        setEdit(!edit);
+        setEdit({bool: true, offer: offer});
     }
 
     useEffect(() => {
@@ -125,16 +122,14 @@ const OfferCard = ({ offer, fetchData, seterr, errModal }) => {
                         </>
                         :
                         <>
-                            <button className="btn edit-btn" onClick={handleEdit}>{!edit? 'Edit' : 'discard'}</button>
+                            <button className="btn edit-btn" onClick={handleEdit}>Edit</button>
                             <button className="btn delete-btn" onClick={handleDelete}>Delete</button>
                         </>
                     }
                 </div>
                 
             </section>
-            {edit && <div ref={editModal} className="edit-modal">
-                <EditModal offer={offer}  setEdit={setEdit} errModal={errModal} setError={seterr} fetchData={fetchData}/>
-            </div>}
+            
         </>
     )
 }
