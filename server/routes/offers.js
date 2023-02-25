@@ -8,31 +8,50 @@ router.get('/', async(req, res)=>{
     const {page=1, query, records=5, attribute} = req.query;
     try {
         let data;
-        if(query){
-            data = await Offer.find({[attribute || 'offerId']: {$regex: query, $options: '-i'}}).populate({
-                path: 'content',
-                populate: {
-                    path: 'item',
-                    ref: 'products'
-                }
-            }).skip((page-1) * records).limit(records);
-        }else{
-            data = await Offer.find().skip((page-1) * records).limit(records).populate({
-                path: 'content',
-                populate: {
-                    path: 'item',
-                    ref: 'products'
-                }
-            });
-        }
         const user = await User.findOne({'_id': req.user});
         if(user.role === 'admin'){
+            if(query){
+                data = await Offer.find({[attribute || 'offerId']: {$regex: query, $options: '-i'}}).populate({
+                    path: 'content',
+                    populate: {
+                        path: 'item',
+                        ref: 'products'
+                    }
+                }).skip((page-1) * records).limit(records);
+            }else{
+                data = await Offer.find().skip((page-1) * records).limit(records).populate({
+                    path: 'content',
+                    populate: {
+                        path: 'item',
+                        ref: 'products'
+                    }
+                });
+            }
             return res.status(200).json({
                 status: 'success',
                 data
             })
         }
-        let applicableOffers = data.filter((offer, index)=>checkCondition(user, offer));
+        else{
+            if(query){
+                data = await Offer.find({[attribute || 'offerId']: {$regex: query, $options: '-i'}}).populate({
+                    path: 'content',
+                    populate: {
+                        path: 'item',
+                        ref: 'products'
+                    }
+                })
+            }else{
+                data = await Offer.find().populate({
+                    path: 'content',
+                    populate: {
+                        path: 'item',
+                        ref: 'products'
+                    }
+                });
+            }
+        }
+        let applicableOffers = data.filter((offer, index)=>checkCondition(user, offer)).slice(((page-1)*records), (page * records))
         return res.status(200).json({
             status: 'success',
             data: applicableOffers
@@ -119,7 +138,7 @@ router.put('/:offerId', async (req, res)=>{
         })
         res.json({
             status: 'success',
-            message: 'updated successfully',
+            message: 'Offer Updated Successfully',
             offer
         })
     } 

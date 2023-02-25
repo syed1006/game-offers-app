@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import useAuth from '../../hooks/useAuth';
 import OfferCard from "../Offer-Card/OfferCard";
+import EditModal from "../EditModal/EditModal";
+import SortableList, { SortableItem } from 'react-easy-sort'
+import arrayMove from 'array-move'
 import './Home.css';
 
 const Home = () => {
@@ -10,6 +13,8 @@ const Home = () => {
     const [errmsg, seterr] = useState({ msg: "" });
     const scroll = useRef();
     const errModal = useRef();
+    const editModal = useRef();
+    const [edit, setEdit] = useState({ bool: false, offer: "" });
 
     const fetchData = async () => {
         try {
@@ -57,6 +62,11 @@ const Home = () => {
         }
     }
 
+    const onSortEnd = (oldIndex, newIndex) => {
+        setData((array) => arrayMove(array, oldIndex, newIndex))
+
+    }
+
     const discardSearch = (e) => {
         e.preventDefault();
         setState({ page: 1, attribute: 'offerId', query: "" });
@@ -99,13 +109,18 @@ const Home = () => {
                 <h1 className="message">No Offers To Show</h1>
             }
             <section className="flex-container">
-
-                {
-                    data.map((offer, index) => {
-                        return <OfferCard offer={offer} key={index} fetchData={fetchData} seterr={seterr} errModal={errModal} />
-                    })
-                }
-
+                <SortableList
+                    onSortEnd={onSortEnd}
+                    className="list"
+                    draggedItemClassName="dragged"
+                    lockAxis="y"
+                    allowDrag={true}>
+                    {
+                        data.map((offer, index) => {
+                            return <SortableItem key={index}><div className="item"><OfferCard offer={offer} key={index} fetchData={fetchData} seterr={seterr} errModal={errModal} setEdit={setEdit} /></div></SortableItem>
+                        })
+                    }
+                </SortableList>
             </section>
             <section className="pagination-btns">
                 <button
@@ -126,6 +141,9 @@ const Home = () => {
                     onClick={() => { errModal.current.style.top = '-300px' }}
                 >OK</button>
             </div>
+            {edit.bool && <div ref={editModal} className="edit-modal">
+                <EditModal offer={edit.offer} setEdit={setEdit} errModal={errModal} setError={seterr} fetchData={fetchData} />
+            </div>}
         </main>
     )
 }
